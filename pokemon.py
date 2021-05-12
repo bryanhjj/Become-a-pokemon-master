@@ -1,6 +1,6 @@
 #create a pokemon class with some basic functionalities
 class Pokemon:
-    def __init__(self, name, level, type, maxHp, curHp, knockedOut=False):
+    def __init__(self, name, type, maxHp, curHp, level = 5, knockedOut=False):
         self.name = name
         self.level = level
         self.type = type
@@ -66,9 +66,10 @@ class Pokemon:
         else:
             return 1
     
-    def attack(self, attackValue, targetPokemon):
+    def attack(self, targetPokemon):
         #function for attacking another players' pokemon
-        targetPokemon.take_Damage((attackValue * self.type_Check(targetPokemon)))
+        targetPokemon.take_Damage((self.level * self.type_Check(targetPokemon)))
+        print("{name} has dealt {damage} damage to {targetName}!".format(name = self.name, damage = round(self.level * self.type_Check(targetPokemon))), targetName = targetPokemon.name)
     
     def revive(self):
         #a function to revive fainted/KO'd pokemon back to fighting condition
@@ -78,10 +79,51 @@ class Pokemon:
 
 #create trainer class
 class Trainer:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, name):
+        #providing trainers with a default of 3 potions and 1 revives for use
+        self.name = name
+        self.numPotions = 3
+        self.numRevives = 1
+        self.pokemons = []
+        self.curPokemon = self.pokemons[0]
 
-
+    def __repr__(self):
+        #a quick description of the trainer
+        return "Trainer {name} has {potions} potions and {revives} revives left.".format(name = self.name, potions = self.numPotions, revives = self.numRevives)
     
+    def use_Potion(self):
+        #function to allow players to use potion on their pokemon
+        if (self.numPotions <= 0):
+            self.numPotions = 0
+            print("You do not have any potions left to use!")
+        else:
+            self.numPotions -= 1
+            print("You used a potion on {pokemonName}.".format(pokemonName = self.curPokemon.name))
+            self.curPokemon.recoverHealth(20)
 
-        
+    def use_Revive(self, choiceOfPokemon):
+        #similar to the use_Potion fuction, this allows players to revive a pokemon from fainting and allows them to bring it back into battle
+        if (self.numRevives <= 0):
+            self.numRevives = 0
+            print("You do not have any revives left to use!")
+        else:
+            self.numRevives -= 1
+            print("You used a revive on {pokemonName}.".format(pokemonName = self.pokemons[choiceOfPokemon].name))
+            self.pokemons[choiceOfPokemon].revive()
+    
+    def switch_Pokemon(self, newActive):
+        #a function that allows players to switch out current active pokemon
+        if (newActive < len(self.pokemons) and newActive >= 0):
+            if (newActive == self.curPokemon):
+                print("{name} is already your current active pokemon!".format(name = self.curPokemon.name))
+            elif (self.pokemons[newActive].knockedOut == True):
+                print("{name} has already fainted and is unable to battle.".format(self.poekmons[newActive].name))
+            else:
+                self.curPokemon = self.pokemons[newActive]
+                print("Go {name}! You got this!".format(name = self.pokemons[newActive].name))
+    
+    def attack_Another_Dude(self, otherTrainer):
+        #the trainer orders their pokemon to attack the other trainers' active pokemon
+        targetPokemon = otherTrainer.curPokemon
+        self.curPokemon.attack(targetPokemon)
+

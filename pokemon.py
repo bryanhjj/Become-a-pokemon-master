@@ -37,54 +37,67 @@ class Pokemon:
     def type_Check(self, targetPokemon):
         #check for type advantage and return the appropriate damage modifier
         if (self.type == "grass" and targetPokemon.type == "grass"):
-            print ("It's not very effective...")
             return 0.5
         elif (self.type == "grass" and targetPokemon.type == "fire"):
-            print ("It's not very effective...")
             return 0.5
         elif (self.type == "grass" and targetPokemon.type == "water"):
-            print ("It's super effective!")
             return 2
         elif (self.type == "fire" and targetPokemon.type == "fire"):
-            print ("It's not very effective...")
             return 0.5
         elif (self.type == "fire" and targetPokemon.type == "water"):
-            print ("It's not very effective...")
             return 0.5
         elif (self.type == "fire" and targetPokemon.type == "grass"):
-            print ("It's super effective!")
             return 2
         elif (self.type == "water" and targetPokemon.type == "water"):
-            print ("It's not very effective...")
             return 0.5
         elif (self.type == "water" and targetPokemon.type == "fire"):
-            print ("It's super effective!")
             return 2
         elif (self.type == "water" and targetPokemon.type == "grass"):
-            print ("It's not very effective...")
             return 0.5
         else:
             return 1
     
     def attack(self, targetPokemon):
         #function for attacking another players' pokemon
+        print("{name} attacks {targetName}!".format(name = self.name, targetName = targetPokemon.name))
+        if (self.type == "grass" and targetPokemon.type == "grass"):
+            print ("It's not very effective...")
+        elif (self.type == "grass" and targetPokemon.type == "fire"):
+            print ("It's not very effective...")
+        elif (self.type == "grass" and targetPokemon.type == "water"):
+            print ("It's super effective!")
+        elif (self.type == "fire" and targetPokemon.type == "fire"):
+            print ("It's not very effective...")
+        elif (self.type == "fire" and targetPokemon.type == "water"):
+            print ("It's not very effective...")
+        elif (self.type == "fire" and targetPokemon.type == "grass"):
+            print ("It's super effective!")
+        elif (self.type == "water" and targetPokemon.type == "water"):
+            print ("It's not very effective...")
+        elif (self.type == "water" and targetPokemon.type == "fire"):
+            print ("It's super effective!")
+        elif (self.type == "water" and targetPokemon.type == "grass"):
+            print ("It's not very effective...")
+        else:
+            return
         targetPokemon.take_Damage((self.level * self.type_Check(targetPokemon)))
-        print("{name} has dealt {damage} damage to {targetName}!".format(name = self.name, damage = round(self.level * self.type_Check(targetPokemon))), targetName = targetPokemon.name)
+        print("{name} has dealt {damage} damage to {targetName}!".format(name = self.name, damage = round(self.level * self.type_Check(targetPokemon)), targetName = targetPokemon.name))
     
     def revive(self):
         #a function to revive fainted/KO'd pokemon back to fighting condition
         self.knockedOut == False
-        print("{name} has recovered from fainting!")
+        print("{name} has recovered from fainting!".format(name = self.name))
+
 
 
 #create trainer class
 class Trainer:
-    def __init__(self, name):
+    def __init__(self, name, listOfPokemon):
         #providing trainers with a default of 3 potions and 1 revives for use
         self.name = name
         self.numPotions = 3
         self.numRevives = 1
-        self.pokemons = []
+        self.pokemons = listOfPokemon
         self.curPokemon = self.pokemons[0]
 
     def __repr__(self):
@@ -99,9 +112,9 @@ class Trainer:
         else:
             self.numPotions -= 1
             print("You used a potion on {pokemonName}.".format(pokemonName = self.curPokemon.name))
-            self.curPokemon.recoverHealth(20)
+            self.curPokemon.recover_Health(20)
 
-    def use_Revive(self, choiceOfPokemon):
+    def use_Revive(self, choiceOfPokemon = 0):
         #similar to the use_Potion fuction, this allows players to revive a pokemon from fainting and allows them to bring it back into battle
         if (self.numRevives <= 0):
             self.numRevives = 0
@@ -127,3 +140,55 @@ class Trainer:
         targetPokemon = otherTrainer.curPokemon
         self.curPokemon.attack(targetPokemon)
 
+
+
+#Creating some pokemons and trainers for testing
+class Cyndaquil(Pokemon):
+    def __init__(self, level = 5):
+        super().__init__("Cyndaquil", "fire", 39, 39, level)
+
+class Piplup(Pokemon):
+    def __init__(self, level = 5):
+        super().__init__("Piplup", "water", 53, 53, level)
+
+class Snivy(Pokemon):
+    def __init__(self, level = 5):
+        super().__init__("Snivy", "grass", 45, 45, level)
+
+class Eevee(Pokemon):
+    #added a normal type pokemon to test for neutral effective attacks
+    def __init__(self, level = 5):
+        super().__init__("Eevee", "normal", 55, 55, level)
+
+pk1 = Cyndaquil(7)
+pk2 = Piplup(7)
+pk3 = Snivy(7)
+pk4 = Eevee(7)
+
+trainer1 = Trainer("Bryan", [pk1, pk2])
+trainer2 = Trainer("Brandon", [pk3, pk4])
+
+#print(trainer1)
+#print(trainer2)
+#print(pk1)
+
+#testing the functions:
+#test 1) trainer attacking another trainer with a super effective move
+#trainer1.attack_Another_Dude(trainer2)
+
+#test 2) trainer attacking with a not so effective move
+#trainer2.attack_Another_Dude(trainer1)
+
+#test 3) switching pokemon and attacking with a neutrally effective move
+#trainer2.switch_Pokemon(1)
+#trainer2.attack_Another_Dude(trainer1)
+#test 4) trainer1 using a potion on their pokemon after receiving damage from trainer2s' pokemon
+#trainer1.use_Potion()
+
+#test 5) testing the KO function
+#trainer1.attack_Another_Dude(trainer2)
+#trainer1.attack_Another_Dude(trainer2)
+#trainer1.attack_Another_Dude(trainer2)
+#trainer1.attack_Another_Dude(trainer2)
+#test 6) testing revive function (trainer2 revives snivy after the onslaught)
+#trainer2.use_Revive()
